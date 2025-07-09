@@ -11,7 +11,7 @@ admin.initializeApp({
 
 const db = admin.database();
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -57,5 +57,6 @@ app.delete('/foods/:key', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server đang chạy: http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
+
