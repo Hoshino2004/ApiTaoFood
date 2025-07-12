@@ -42,4 +42,19 @@ router.delete('/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
+// 📥 Lấy chi tiết user theo ID
+router.get('/:id', (req, res) => {
+  const id = req.params.id;
+
+  usersRef.child(id).once('value', snapshot => {
+    const user = snapshot.val();
+    if (user) {
+      res.json({ id, ...user });
+    } else {
+      res.status(404).send("Không tìm thấy người dùng");
+    }
+  }, err => res.status(500).send(err));
+});
+
+
 module.exports = router;
