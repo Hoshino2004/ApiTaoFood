@@ -79,6 +79,9 @@ router.post('/:userId', async (req, res) => {
     // Ghi vào bảng bills
     await billsRef.child(userId).child(billId).set(billData);
 
+    // Xóa giỏ hàng sau khi tạo hóa đơn thành công
+    await cartRef.child(userId).remove();
+
     res.send({
       message: "Tạo hóa đơn thành công",
       billId: billId
