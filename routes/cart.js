@@ -109,14 +109,22 @@ router.put('/:userId/MenuFood/:foodId', async (req, res) => {
       await foodRef.update({ ...foodData, quantity });
     }
 
-    // Tính lại tổng
+    // Tính lại total từ foodsRef
+    let newTotal = 0;
+
     const allItemsSnap = await userCartRef.child('MenuFood').once('value');
     const allItems = allItemsSnap.val() || {};
 
-    let newTotal = 0;
     for (const key in allItems) {
       const item = allItems[key];
-      newTotal += (item.price || 0) * (item.quantity || 0);
+      const foodId = key;
+
+      const foodSnap = await foodsRef.child(foodId).once('value');
+      const foodData = foodSnap.val();
+
+      if (!foodData || !foodData.price) continue;
+
+      newTotal += foodData.price * (item.quantity || 0);
     }
 
     await userCartRef.update({ total: newTotal });
