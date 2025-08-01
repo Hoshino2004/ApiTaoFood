@@ -102,22 +102,11 @@ router.put('/:userId/MenuFood/:foodId', async (req, res) => {
     const foodData = foodSnap.val();
 
     if (quantity === 0) {
+      // Nếu quantity = 0 → Xóa món
       await foodRef.remove();
     } else {
-      // Lấy lại giá món ăn từ bảng Foods
-      const foodInfoSnap = await foodsRef.child(foodId).once('value');
-      const foodInfo = foodInfoSnap.val();
-
-      if (!foodInfo || !foodInfo.price) {
-        return res.status(400).send("Không tìm thấy giá món ăn trong hệ thống");
-      }
-
-      // Cập nhật lại cả quantity và price để đảm bảo đúng
-      await foodRef.update({
-        ...foodData,
-        price: foodInfo.price,
-        quantity
-      });
+      // Cập nhật số lượng mới mà giữ lại các dữ liệu cũ
+      await foodRef.update({ ...foodData, quantity });
     }
 
     // Tính lại tổng
