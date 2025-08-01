@@ -5,6 +5,20 @@ const billsRef = db.ref("MobileNangCao/Bills");
 const cartRef = db.ref("MobileNangCao/Cart");
 const { v4: uuidv4 } = require('uuid'); // npm install uuid nếu chưa cài
 
+// Lấy thông tin hóa đơn
+router.get('/', (req, res) => {
+  billsRef.once('value', snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      res.json(data);
+    } else {
+      res.status(404).send("Không tìm thấy thông tin hóa đơn");
+    }
+  }, error => {
+    res.status(500).send(error);
+  });
+});
+
 // Lấy thông tin hóa đơn theo id người dùng
 router.get('/:userId', (req, res) => {
   const userId = req.params.userId;
