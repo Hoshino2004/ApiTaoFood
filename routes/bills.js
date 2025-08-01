@@ -72,6 +72,7 @@ router.post('/:userId', async (req, res) => {
       createdAt: new Date().toISOString(), // hoặc dùng timestamp nếu thích
       statusID: 2,                         // trạng thái mặc định
       userID: userId,
+      billID: billId,
       total: cartData.total || 0,
       MenuFood: cartData.MenuFood
     };
