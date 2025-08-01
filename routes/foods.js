@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('firebase-admin').database();
 const foodsRef = db.ref("MobileNangCao/Foods");
 
-// 📥 Lấy danh sách món ăn
+// Lấy danh sách món ăn
 router.get('/', (req, res) => {
   foodsRef.once('value', snapshot => {
     res.json(snapshot.val());
@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
   });
 });
 
-// ➕ Thêm món ăn mới (ID tự set)
+// Thêm món ăn mới (ID tự set)
 router.post('/', (req, res) => {
   const newFood = req.body;
 
@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// ✏️ Sửa món ăn (chỉ sửa phần cần)
+// Sửa món ăn (chỉ sửa phần cần)
 router.put('/:id', (req, res) => {
   const id = req.params.id;
   const data = req.body;
@@ -35,7 +35,7 @@ router.put('/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// ❌ Xoá món ăn
+// Xoá món ăn
 router.delete('/:id', (req, res) => {
   const id = req.params.id;
 
@@ -44,7 +44,7 @@ router.delete('/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// 📄 Lấy chi tiết món ăn theo ID
+// Lấy chi tiết món ăn theo ID
 router.get('/:id', (req, res) => {
   const id = req.params.id;
 

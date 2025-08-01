@@ -3,14 +3,14 @@ const router = express.Router();
 const db = require('firebase-admin').database();
 const unitRef = db.ref("MobileNangCao/Unit");
 
-// 📥 Lấy tất cả đơn vị
+// Lấy tất cả đơn vị
 router.get('/', (req, res) => {
   unitRef.once('value', snapshot => {
     res.json(snapshot.val());
   }, err => res.status(500).send(err));
 });
 
-// ➕ Thêm/cập nhật đơn vị theo ID
+// Thêm/cập nhật đơn vị theo ID
 router.put('/:id', (req, res) => {
   const id = req.params.id;
   const name = req.body.name;
@@ -22,7 +22,7 @@ router.put('/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// ❌ Xoá đơn vị
+// Xoá đơn vị
 router.delete('/:id', (req, res) => {
   const id = req.params.id;
 

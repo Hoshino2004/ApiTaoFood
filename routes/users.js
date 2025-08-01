@@ -3,14 +3,14 @@ const router = express.Router();
 const db = require('firebase-admin').database();
 const usersRef = db.ref("MobileNangCao/Users");
 
-// 📥 Lấy tất cả users
+// Lấy tất cả users
 router.get('/', (req, res) => {
   usersRef.once('value', snapshot => {
     res.json(snapshot.val());
   }, err => res.status(500).send(err));
 });
 
-// ➕ Thêm user mới (ID tự set thủ công)
+// Thêm user mới (ID tự set thủ công)
 router.post('/', (req, res) => {
   const user = req.body;
 
@@ -23,7 +23,7 @@ router.post('/', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// ✏️ Sửa thông tin user (có thể sửa 1 phần)
+// Sửa thông tin user (có thể sửa 1 phần)
 router.put('/:id', (req, res) => {
   const id = req.params.id;
   const data = req.body;
@@ -33,7 +33,7 @@ router.put('/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// ❌ Xoá user
+// Xoá user
 router.delete('/:id', (req, res) => {
   const id = req.params.id;
 
@@ -42,7 +42,7 @@ router.delete('/:id', (req, res) => {
     .catch(err => res.status(500).send(err));
 });
 
-// 📥 Lấy chi tiết user theo ID
+// Lấy chi tiết user theo ID
 router.get('/:id', (req, res) => {
   const id = req.params.id;
 
