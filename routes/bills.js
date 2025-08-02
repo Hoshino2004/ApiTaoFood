@@ -95,10 +95,11 @@ router.get('/status/:statusID', async (req, res) => {
 
     const filteredResults = {};
 
-    // Lặp qua từng user và từng bill
     Object.entries(allBills).forEach(([userId, bills]) => {
+      if (!bills) return; 
+
       Object.entries(bills).forEach(([billId, billData]) => {
-        if (String(billData.statusID) === statusID) {
+        if (String(billData?.statusID) === statusID) {
           if (!filteredResults[userId]) {
             filteredResults[userId] = {};
           }
@@ -116,6 +117,7 @@ router.get('/status/:statusID', async (req, res) => {
     res.status(500).send("Lỗi khi lọc tất cả hóa đơn: " + err.message);
   }
 });
+
 
 // Tạo hóa đơn mới cho người dùng
 router.post('/:userId', async (req, res) => {
