@@ -26,7 +26,7 @@ router.get('/:userId', (req, res) => {
   billsRef.child(userId).once('value', snapshot => {
     const data = snapshot.val();
     if (data) {
-      res.json({ userId, ...data });
+      res.json(data);
     } else {
       res.status(404).send("Không tìm thấy thông tin hóa đơn");
     }
@@ -42,7 +42,7 @@ router.get('/:userId/:billId', (req, res) => {
   billsRef.child(userId).child(billId).once('value', snapshot => {
     const data = snapshot.val();
     if (data) {
-      res.json({ userId, billId, ...data });
+      res.json(data);
     } else {
       res.status(404).send("Không tìm thấy thông tin hóa đơn");
     }
