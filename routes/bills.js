@@ -136,13 +136,17 @@ router.post('/:userId', async (req, res) => {
 
     // Chuẩn bị dữ liệu bill
     const billData = {
-      createdAt: new Date().toISOString(), // hoặc dùng timestamp nếu thích
-      statusID: 2,                         // trạng thái mặc định
+      createdAt: new Date(Date.now() + 7 * 60 * 60 * 1000)
+        .toISOString()
+        .replace('T', ' ')
+        .substring(0, 19),
+      statusID: 2,
       userID: userId,
       billID: billId,
       total: cartData.total || 0,
       MenuFood: cartData.MenuFood
     };
+
 
     // Ghi vào bảng bills
     await billsRef.child(userId).child(billId).set(billData);
