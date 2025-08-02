@@ -26,8 +26,8 @@ router.post('/:userId/MenuFood/:foodId', async (req, res) => {
   const { quantity } = req.body;
 
   // Kiểm tra quantity hợp lệ
-  if (typeof quantity !== 'number' || quantity < 0 || quantity > 10) {
-    return res.status(400).send("Số lượng phải là số từ 0 đến 10");
+  if (typeof quantity !== 'number' || quantity < 0 || quantity > 50) {
+    return res.status(400).send("Số lượng phải là số từ 0 đến 50");
   }
 
   try {
