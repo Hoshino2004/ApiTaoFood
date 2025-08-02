@@ -83,7 +83,7 @@ router.get('/:userId/status/:statusID', async (req, res) => {
 
 // Lọc tất cả hóa đơn theo statusID (không theo userId)
 router.get('/status/:statusID', async (req, res) => {
-  const { statusID } = req.params;
+  const statusID = parseInt(req.params.statusID); // ✅ ép kiểu về number
 
   try {
     const allBillsSnap = await billsRef.once('value');
@@ -96,10 +96,10 @@ router.get('/status/:statusID', async (req, res) => {
     const filteredResults = {};
 
     Object.entries(allBills).forEach(([userId, bills]) => {
-      if (!bills) return; 
+      if (!bills) return;
 
       Object.entries(bills).forEach(([billId, billData]) => {
-        if (String(billData?.statusID) === statusID) {
+        if (billData?.statusID === statusID) { // ✅ so sánh đúng kiểu
           if (!filteredResults[userId]) {
             filteredResults[userId] = {};
           }
@@ -117,7 +117,6 @@ router.get('/status/:statusID', async (req, res) => {
     res.status(500).send("Lỗi khi lọc tất cả hóa đơn: " + err.message);
   }
 });
-
 
 // Tạo hóa đơn mới cho người dùng
 router.post('/:userId', async (req, res) => {
