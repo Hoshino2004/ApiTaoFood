@@ -25,6 +25,11 @@ router.post('/:userId/MenuFood/:foodId', async (req, res) => {
   const { userId, foodId } = req.params;
   const { quantity } = req.body;
 
+  // Kiểm tra quantity hợp lệ
+  if (typeof quantity !== 'number' || quantity < 0 || quantity > 10) {
+    return res.status(400).send("Số lượng phải là số từ 0 đến 10");
+  }
+
   try {
     // Lấy thông tin món ăn từ bảng foods
     const foodSnap = await foodsRef.child(foodId).once('value');
@@ -40,13 +45,18 @@ router.post('/:userId/MenuFood/:foodId', async (req, res) => {
     const cartData = userSnap.val() || {};
 
     const existingItem = cartData.MenuFood?.[foodId];
-    const newQuantity = existingItem ? (existingItem.quantity || 0) + quantity : quantity;
+    const currentQuantity = existingItem?.quantity || 0;
+    const newQuantity = currentQuantity + quantity;
+
+    // Kiểm tra tổng số lượng sau khi cộng không vượt quá 50
+    if (newQuantity > 50) {
+      return res.status(400).send("Tổng số lượng của món ăn không được vượt quá 50");
+    }
 
     // Tính total mới:
     let newTotal = 0;
-
-    // Lặp lại các món cũ và cộng tổng
     const allItems = cartData.MenuFood || {};
+
     for (const key in allItems) {
       if (key === foodId) {
         newTotal += price * newQuantity; // món đang thêm
@@ -77,7 +87,6 @@ router.post('/:userId/MenuFood/:foodId', async (req, res) => {
   }
 });
 
-
 // Sửa số lượng món ăn trong giỏ hàng theo userId và foodId
 router.put('/:userId/MenuFood/:foodId', async (req, res) => {
   const { userId, foodId } = req.params;
@@ -88,7 +97,7 @@ router.put('/:userId/MenuFood/:foodId', async (req, res) => {
   }
 
   if (quantity < 0) return res.status(400).send("Số lượng không thể âm");
-  if (quantity > 10) return res.status(400).send("Số lượng không được vượt quá 10");
+  if (quantity > 50) return res.status(400).send("Số lượng không được vượt quá 50");
 
   try {
     const userCartRef = cartRef.child(userId);

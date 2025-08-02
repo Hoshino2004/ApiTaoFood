@@ -103,10 +103,21 @@ router.put('/:userId/:billId/status', async (req, res) => {
 
   try {
     const billRef = billsRef.child(userId).child(billId);
-
     const billSnap = await billRef.once('value');
+
     if (!billSnap.exists()) {
       return res.status(404).send("Hóa đơn không tồn tại");
+    }
+
+    const currentStatus = billSnap.val().statusID;
+
+    // Nếu statusID hiện tại là 0 hoặc 1 thì không cho cập nhật
+    if (currentStatus === 0) {
+      return res.status(403).send("Không thể cập nhật hóa đơn đã hủy (statusID = 0)");
+    }
+
+    if (currentStatus === 1) {
+      return res.status(400).send("Không thể cập nhật hóa đơn đã giao (statusID = 1)");
     }
 
     await billRef.update({ statusID });
@@ -116,6 +127,7 @@ router.put('/:userId/:billId/status', async (req, res) => {
     res.status(500).send("Lỗi khi cập nhật trạng thái: " + err.message);
   }
 });
+
 
 module.exports = router;
 
