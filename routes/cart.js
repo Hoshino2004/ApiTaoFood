@@ -11,7 +11,7 @@ router.get('/:userId', (req, res) => {
   cartRef.child(userId).once('value', snapshot => {
     const data = snapshot.val();
     if (data) {
-      res.json({ userId, ...data });
+      res.json(data);
     } else {
       res.status(404).send("Không tìm thấy thông tin giỏ hàng");
     }
