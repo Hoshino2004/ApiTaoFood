@@ -51,6 +51,72 @@ router.get('/:userId/:billId', (req, res) => {
   });
 });
 
+// Lọc hóa đơn theo userId và statusID
+router.get('/:userId/status/:statusID', async (req, res) => {
+  const { userId, statusID } = req.params;
+
+  try {
+    const billsSnap = await billsRef.child(userId).once('value');
+    const bills = billsSnap.val();
+
+    if (!bills) {
+      return res.status(404).send("Không tìm thấy hóa đơn");
+    }
+
+    const filteredBills = {};
+
+    Object.entries(bills).forEach(([billId, billData]) => {
+      if (String(billData.statusID) === statusID) {
+        filteredBills[billId] = billData;
+      }
+    });
+
+    if (Object.keys(filteredBills).length === 0) {
+      return res.status(404).send("Không có hóa đơn nào với trạng thái này");
+    }
+
+    res.json(filteredBills);
+  } catch (err) {
+    res.status(500).send("Lỗi khi lọc hóa đơn: " + err.message);
+  }
+});
+
+// Lọc tất cả hóa đơn theo statusID (không theo userId)
+router.get('/status/:statusID', async (req, res) => {
+  const { statusID } = req.params;
+
+  try {
+    const allBillsSnap = await billsRef.once('value');
+    const allBills = allBillsSnap.val();
+
+    if (!allBills) {
+      return res.status(404).send("Không có hóa đơn nào trong hệ thống");
+    }
+
+    const filteredResults = {};
+
+    // Lặp qua từng user và từng bill
+    Object.entries(allBills).forEach(([userId, bills]) => {
+      Object.entries(bills).forEach(([billId, billData]) => {
+        if (String(billData.statusID) === statusID) {
+          if (!filteredResults[userId]) {
+            filteredResults[userId] = {};
+          }
+          filteredResults[userId][billId] = billData;
+        }
+      });
+    });
+
+    if (Object.keys(filteredResults).length === 0) {
+      return res.status(404).send("Không có hóa đơn nào với trạng thái này");
+    }
+
+    res.json(filteredResults);
+  } catch (err) {
+    res.status(500).send("Lỗi khi lọc tất cả hóa đơn: " + err.message);
+  }
+});
+
 // Tạo hóa đơn mới cho người dùng
 router.post('/:userId', async (req, res) => {
   const { userId } = req.params;
