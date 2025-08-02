@@ -165,31 +165,40 @@ router.delete('/:userId/MenuFood/:foodId', async (req, res) => {
     const userCartRef = cartRef.child(userId);
     const foodRef = userCartRef.child('MenuFood').child(foodId);
 
-    // Lấy dữ liệu món ăn trước khi xoá
+    // Kiểm tra món ăn có tồn tại không
     const foodSnap = await foodRef.once('value');
-
     if (!foodSnap.exists()) {
       return res.status(404).send("Món ăn không tồn tại trong giỏ hàng");
     }
 
-    const foodData = foodSnap.val();
-    const itemTotal = foodData.price * foodData.quantity;
+    // Xoá món ăn khỏi MenuFood
+    await foodRef.remove();
 
-    // Lấy current total
-    const userSnap = await userCartRef.once('value');
-    const currentTotal = userSnap.val()?.total || 0;
-    const updatedTotal = currentTotal - itemTotal;
+    // Lấy lại toàn bộ món còn lại trong giỏ
+    const allItemsSnap = await userCartRef.child('MenuFood').once('value');
+    const allItems = allItemsSnap.val() || {};
 
-    // Xoá món ăn và cập nhật total
-    await userCartRef.update({
-      [`MenuFood/${foodId}`]: null,
-      total: updatedTotal >= 0 ? updatedTotal : 0 // đảm bảo không âm
-    });
+    // Tính lại tổng tiền dựa trên dữ liệu Foods
+    let newTotal = 0;
+
+    for (const key in allItems) {
+      const item = allItems[key];
+      const foodInfoSnap = await foodsRef.child(key).once('value');
+      const foodInfo = foodInfoSnap.val();
+
+      if (!foodInfo || !foodInfo.price) continue;
+
+      newTotal += foodInfo.price * (item.quantity || 0);
+    }
+
+    // Cập nhật lại total
+    await userCartRef.update({ total: newTotal });
 
     res.send("Xoá món ăn và cập nhật tổng tiền thành công");
   } catch (err) {
     res.status(500).send("Lỗi khi xoá món ăn: " + err.message);
   }
 });
+
 
 module.exports = router;
