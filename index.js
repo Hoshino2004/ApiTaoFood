@@ -22,6 +22,7 @@ const usersRoutes = require('./routes/users');
 const unitRoutes = require('./routes/unit');
 const cartRoutes = require('./routes/cart');
 const billsRoutes = require('./routes/bills');
+const statusRoutes = require('./routes/status');
 
 app.use('/foods', foodsRoutes);
 app.use('/categories', categoriesRoutes);
@@ -29,6 +30,7 @@ app.use('/users', usersRoutes);
 app.use('/unit', unitRoutes);
 app.use('/cart', cartRoutes);
 app.use('/bills', billsRoutes);
+app.use('/status', statusRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);
